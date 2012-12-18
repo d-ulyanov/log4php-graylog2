@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/" threshold="all">
+    <appender name="MyAppender" class="LoggerAppenderAMQP">
+        <param name="host" value="graylog2.lan" />
+        <param name="port" value="5672" />
+        <param name="vhost" value="my_vhost" />
+        <param name="login" value="my_login" />
+        <param name="password" value="my_password" />
+        <param name="routingKey" value="logstash_queue" />
+        <layout class="LoggerLayoutGelf" />
+    </appender>
+    <logger name="MyLogger">
+        <level value="DEBUG" />
+        <appender_ref ref="MyAppender" />
+    </logger>
+</log4php:configuration>
