@@ -35,14 +35,13 @@ class LoggerAppenderAMQP extends LoggerAppender
     protected static $_AMQPConnection;
     protected static $_AMQPExchange;
 
-	/**
-	 * Forwards the logging event to the AMQP.
-	 * @param LoggerLoggingEvent $event
-	 */
-	protected function append(LoggerLoggingEvent $event)
-	{
-        try
-        {
+    /**
+     * Forwards the logging event to the AMQP.
+     * @param LoggerLoggingEvent $event
+     */
+    protected function append(LoggerLoggingEvent $event)
+    {
+        try {
             $this->getAMQPExchange()->publish(
                 $this->layout->format($event),
                 $this->getRoutingKey(),
@@ -52,15 +51,12 @@ class LoggerAppenderAMQP extends LoggerAppender
                     'content_encoding' => 'UTF-8'
                 )
             );
-        }
-        catch (Exception $e)
-        {
-            if (!$this->getSkipConnectionError())
-            {
+        } catch (Exception $e) {
+            if (!$this->getSkipConnectionError()) {
                 throw $e;
             }
         }
-	}
+    }
 
     protected function setAMQPConnection($AMQPConnection)
     {
@@ -69,8 +65,7 @@ class LoggerAppenderAMQP extends LoggerAppender
 
     protected function getAMQPConnection()
     {
-        if (is_null(self::$_AMQPConnection))
-        {
+        if (is_null(self::$_AMQPConnection)) {
             self::$_AMQPConnection = $this->createAMQPConnection();
         }
         return self::$_AMQPConnection;
@@ -96,8 +91,7 @@ class LoggerAppenderAMQP extends LoggerAppender
 
     protected function getAMQPExchange()
     {
-        if (is_null(self::$_AMQPExchange))
-        {
+        if (is_null(self::$_AMQPExchange)) {
             $channel = new AMQPChannel($this->getAMQPConnection());
             $exchange = new AMQPExchange($channel);
             self::$_AMQPExchange = $exchange;
