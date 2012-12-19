@@ -12,8 +12,15 @@
         <param name="skipConnectionError" value="0" />
         <layout class="LoggerLayoutGelf" />
     </appender>
+    <appender name="MyGraylog2Appender" class="LoggerAppenderGraylog2">
+        <param name="host" value="192.168.1.123" />
+        <param name="port" value="12201" />
+        <param name="chunkSize" value="8152" />
+        <layout class="LoggerLayoutGelf" />
+    </appender>
     <logger name="MyLogger">
         <level value="DEBUG" />
         <appender_ref ref="MyAMQPAppender" />
+        <appender_ref ref="MyGraylog2Appender" />
     </logger>
 </log4php:configuration>
