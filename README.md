@@ -3,7 +3,7 @@ log4php-amqp
 
 Copyright (c) 2012 Dmitriy Ulyanov
 
-Here you can find 2 new appenders for log4php: LoggerAppenderAMQP and LoggerAppenderGraylog2.
+Here you can find 2 new appenders for log4php: LoggerAppenderAMQP and LoggerAppenderGraylog2.<br />
 You can pass log messages to Graylog2 or AMQP (RabbitMQ for ex.) using it.
 
 Appender LoggerAppenderGraylog2 can pass messages directly to Graylog2 server.<br />
@@ -19,18 +19,14 @@ Usage:
 	
 2. Use your new logger:
 
-require 'log4php/Logger.php';
-
-require 'log4php/appenders/LoggerAppenderAMQP.php';
-
-require 'log4php/appenders/LoggerAppenderGraylog2.php';
-
-require 'log4php/layouts/LoggerLayoutGelf.php';
+require 'log4php/Logger.php';<br />
+require 'log4php/appenders/LoggerAppenderAMQP.php';<br />
+require 'log4php/appenders/LoggerAppenderGraylog2.php';<br />
+require 'log4php/layouts/LoggerLayoutGelf.php';<br />
 
 Logger::configure('exampleConfig.xml', 'LoggerConfigurationAdapterXML');
 
-$myLogger = Logger::getLogger('MyLogger');
-
+$myLogger = Logger::getLogger('MyLogger');<br />
 $myLogger->debug("Hello world!");
 
 -----------
