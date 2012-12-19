@@ -11,10 +11,13 @@
  * - <string> vhost               - AMQP vhost
  * - <string> login               - AMQP login
  * - <string> password            - AMQP password
+ * - <string> exchangeName        - AMQP exchange name
+ * - <string> exchangeType        - AMQP exchange type (direct | fanout ). Default - direct
+ * - <string> queueName           - AMQP queue name
  * - <string> routingKey          - AMQP routing key. Set up AMQP server to route messages with this key to your queue
  * - <int>    skipConnectionError - 1 by defalut. All connection errors will be skipped without any error or exception
  *
- * @version 0.1
+ * @version 0.2
  * @author Dmitriy Ulyanov (Wikimart LLC)
  * @license GPL
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -29,19 +32,23 @@ class LoggerAppenderAMQP extends LoggerAppender
     protected $_vhost;
     protected $_login;
     protected $_password;
+    protected $_exchangeName;
+    protected $_exchangeType = 'direct';
+    protected $_queueName;
     protected $_routingKey;
     protected $_skipConnectionError = 1;
 
     protected static $_AMQPConnection;
     protected static $_AMQPExchange;
 
-    /**
-     * Forwards the logging event to the AMQP.
-     * @param LoggerLoggingEvent $event
-     */
-    protected function append(LoggerLoggingEvent $event)
-    {
-        try {
+	/**
+	 * Forwards the logging event to the AMQP.
+	 * @param LoggerLoggingEvent $event
+	 */
+	protected function append(LoggerLoggingEvent $event)
+	{
+        try
+        {
             $this->getAMQPExchange()->publish(
                 $this->layout->format($event),
                 $this->getRoutingKey(),
@@ -51,12 +58,15 @@ class LoggerAppenderAMQP extends LoggerAppender
                     'content_encoding' => 'UTF-8'
                 )
             );
-        } catch (Exception $e) {
-            if (!$this->getSkipConnectionError()) {
+        }
+        catch (Exception $e)
+        {
+            if (!$this->getSkipConnectionError())
+            {
                 throw $e;
             }
         }
-    }
+	}
 
     protected function setAMQPConnection($AMQPConnection)
     {
@@ -65,7 +75,8 @@ class LoggerAppenderAMQP extends LoggerAppender
 
     protected function getAMQPConnection()
     {
-        if (is_null(self::$_AMQPConnection)) {
+        if (is_null(self::$_AMQPConnection))
+        {
             self::$_AMQPConnection = $this->createAMQPConnection();
         }
         return self::$_AMQPConnection;
@@ -91,9 +102,22 @@ class LoggerAppenderAMQP extends LoggerAppender
 
     protected function getAMQPExchange()
     {
-        if (is_null(self::$_AMQPExchange)) {
+        if (is_null(self::$_AMQPExchange))
+        {
             $channel = new AMQPChannel($this->getAMQPConnection());
             $exchange = new AMQPExchange($channel);
+            $exchange->setName($this->getExchangeName());
+            $exchange->setType($this->getExchangeType());
+            $exchange->setFlags(AMQP_DURABLE);
+            $exchange->declare();
+
+            $queue = new AMQPQueue($channel);
+            $queue->setName($this->getQueueName());
+            $queue->setFlags(AMQP_DURABLE);
+            $queue->setArgument('x-ha-policy', 'all');
+            $queue->declare();
+            $queue->bind($this->getExchangeName(), $this->getRoutingKey());
+
             self::$_AMQPExchange = $exchange;
         }
         return self::$_AMQPExchange;
@@ -167,5 +191,35 @@ class LoggerAppenderAMQP extends LoggerAppender
     public function getSkipConnectionError()
     {
         return $this->_skipConnectionError;
+    }
+
+    public function setExchangeName($exchange)
+    {
+        $this->_exchangeName = $exchange;
+    }
+
+    public function getExchangeName()
+    {
+        return $this->_exchangeName;
+    }
+
+    public function setQueueName($queue)
+    {
+        $this->_queueName = $queue;
+    }
+
+    public function getQueueName()
+    {
+        return $this->_queueName;
+    }
+
+    public function setExchangeType($exchangeType)
+    {
+        $this->_exchangeType = $exchangeType;
+    }
+
+    public function getExchangeType()
+    {
+        return $this->_exchangeType;
     }
 }
