@@ -1,4 +1,4 @@
-log4php-amqp
+log4php-graylog2
 ============
 
 Copyright (c) 2012 Dmitriy Ulyanov
