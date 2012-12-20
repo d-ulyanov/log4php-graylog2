@@ -6,6 +6,7 @@
  * Configurable parameters for this layout are:
  *
  * - <int> shortMessageLength
+ * - <string> shortMessageEndTag
  * - <string> hostname
  *
  * Default hostname is result of gethostname()
@@ -51,53 +52,84 @@ class LoggerLayoutGelf extends LoggerLayout
      */
     const GELF_PROTOCOL_VERSION = '1.0';
 
+    /**
+     * Tag for dividing short and full message
+     */
+    const SHORT_MESSAGE_END_TAG = "</shortMessage>";
+
     /** Maps log4php levels to equivalent Gelf levels */
-   	protected $_levelMap = array(
-   		LoggerLevel::TRACE => self::DEBUG,
-   		LoggerLevel::DEBUG => self::DEBUG,
-   		LoggerLevel::INFO  => self::INFO,
-   		LoggerLevel::WARN  => self::WARNING,
-   		LoggerLevel::ERROR => self::ERROR,
-   		LoggerLevel::FATAL => self::CRITICAL,
-   	);
+    protected $_levelMap = array(
+        LoggerLevel::TRACE => self::DEBUG,
+        LoggerLevel::DEBUG => self::DEBUG,
+        LoggerLevel::INFO => self::INFO,
+        LoggerLevel::WARN => self::WARNING,
+        LoggerLevel::ERROR => self::ERROR,
+        LoggerLevel::FATAL => self::CRITICAL,
+    );
 
     protected $_shortMessageLength = 70;
     protected $_hostname;
+    protected $_shortMessageEndTag = self::SHORT_MESSAGE_END_TAG;
 
     public function activateOptions()
     {
         $this->setHostname(gethostname());
-   		return parent::activateOptions();
-   	}
+        return parent::activateOptions();
+    }
 
     public function format(LoggerLoggingEvent $event)
     {
-        return json_encode(array(
+        $messageAsArray = array(
             'version' => self::GELF_PROTOCOL_VERSION,
             'timestamp' => $event->getTimeStamp(),
-            'short_message' => mb_substr($event->getMessage(), 0, $this->getShortMessageLength()),
-            'full_message' => $event->getMessage(),
+            'short_message' => $this->getShortMessage($event),
+            'full_message' => $this->getFullMessage($event),
             'facility' => $event->getLoggerName(),
             'host' => $this->getHostname(),
             'level' => $this->getGELFLevel($event->getLevel()),
             'file' => $event->getLocationInformation()->getFileName(),
-            'line' => $event->getLocationInformation()->getLineNumber(),
-        ));
-   	}
+            'line' => $event->getLocationInformation()->getLineNumber()
+        );
+
+        foreach ($event->getMDCMap() as $key => $value)
+        {
+            $messageAsArray['_MDC_'.$key] = $value;
+        }
+
+        return json_encode($messageAsArray);
+    }
+
+    protected function getShortMessage(LoggerLoggingEvent $event)
+    {
+        if (strpos($event->getMessage(), $this->getShortMessageEndTag()) !== false)
+        {
+            list($shortMessage) = explode($this->getShortMessageEndTag(), $event->getMessage());
+            return $shortMessage;
+        }
+        return mb_substr($event->getMessage(), 0, $this->getShortMessageLength());
+    }
+
+    protected function getFullMessage(LoggerLoggingEvent $event)
+    {
+        if (strpos($event->getMessage(), $this->getShortMessageEndTag()) !== false)
+        {
+            list(, $fullMessage) = explode($this->getShortMessageEndTag(), $event->getMessage());
+            return $fullMessage;
+        }
+        return $event->getMessage();
+    }
+
 
     protected function getGELFLevel(LoggerLevel $level)
     {
-   		$int = $level->toInt();
+        $int = $level->toInt();
 
-        if (isset($this->_levelMap[$int]))
-        {
+        if (isset($this->_levelMap[$int])) {
             return $this->_levelMap[$int];
-        }
-        else
-        {
+        } else {
             return self::DEBUG;
         }
-   	}
+    }
 
     public function setShortMessageLength($shortMessageLength)
     {
@@ -117,5 +149,15 @@ class LoggerLayoutGelf extends LoggerLayout
     public function getHostname()
     {
         return $this->_hostname;
+    }
+
+    public function setShortMessageEndTag($shortMessageEndTag)
+    {
+        $this->_shortMessageEndTag = $shortMessageEndTag;
+    }
+
+    public function getShortMessageEndTag()
+    {
+        return $this->_shortMessageEndTag;
     }
 }
