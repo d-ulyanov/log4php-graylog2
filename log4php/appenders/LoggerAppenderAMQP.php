@@ -18,9 +18,9 @@
  * - <int>    skipConnectionError - 1 by defalut. All connection errors will be skipped without any error or exception
  *
  * @version 0.2
- * @author Dmitriy Ulyanov (Wikimart LLC)
- * @license GPL
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @author Dmitriy Ulyanov dmitriy.ulyanov@wikimart.ru
+ * @license MIT
+ * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 class LoggerAppenderAMQP extends LoggerAppender
 {

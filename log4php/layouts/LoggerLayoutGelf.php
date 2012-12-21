@@ -28,10 +28,10 @@
  * }
  * </pre>
  *
- * @version 0.1
- * @author Dmitriy Ulyanov (Wikimart LLC)
- * @license GPL
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 0.2
+ * @author Dmitriy Ulyanov dmitriy.ulyanov@wikimart.ru
+ * @license MIT
+ * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 class LoggerLayoutGelf extends LoggerLayout
 {

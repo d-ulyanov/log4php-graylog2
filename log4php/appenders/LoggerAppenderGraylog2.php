@@ -11,9 +11,9 @@
  * - <int> chunkSize    - 8152 by defalut. Message chunk max size in bytes
  *
  * @version 0.1
- * @author Dmitriy Ulyanov (Wikimart LLC)
- * @license GPL
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @author Dmitriy Ulyanov dmitriy.ulyanov@wikimart.ru
+ * @license MIT
+ * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 class LoggerAppenderGraylog2 extends LoggerAppender
 {
