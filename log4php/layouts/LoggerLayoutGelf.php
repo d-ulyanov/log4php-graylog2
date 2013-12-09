@@ -101,22 +101,22 @@ class LoggerLayoutGelf extends LoggerLayout
 
     protected function getShortMessage(LoggerLoggingEvent $event)
     {
-        if (strpos($event->getMessage(), $this->getShortMessageEndTag()) !== false)
+        if (strpos($event->getRenderedMessage(), $this->getShortMessageEndTag()) !== false)
         {
-            list($shortMessage) = explode($this->getShortMessageEndTag(), $event->getMessage());
+            list($shortMessage) = explode($this->getShortMessageEndTag(), $event->getRenderedMessage());
             return $shortMessage;
         }
-        return mb_substr($event->getMessage(), 0, $this->getShortMessageLength());
+        return mb_substr($event->getRenderedMessage(), 0, $this->getShortMessageLength());
     }
 
     protected function getFullMessage(LoggerLoggingEvent $event)
     {
-        if (strpos($event->getMessage(), $this->getShortMessageEndTag()) !== false)
+        if (strpos($event->getRenderedMessage(), $this->getShortMessageEndTag()) !== false)
         {
-            list(, $fullMessage) = explode($this->getShortMessageEndTag(), $event->getMessage());
+            list(, $fullMessage) = explode($this->getShortMessageEndTag(), $event->getRenderedMessage());
             return $fullMessage;
         }
-        return $event->getMessage();
+        return $event->getRenderedMessage();
     }
 
 
