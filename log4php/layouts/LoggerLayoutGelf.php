@@ -67,7 +67,7 @@ class LoggerLayoutGelf extends LoggerLayout
         LoggerLevel::FATAL => self::CRITICAL,
     );
 
-    protected $_shortMessageLength = 70;
+    protected $_shortMessageLength = 255;
     protected $_hostname;
     protected $_shortMessageEndTag = self::SHORT_MESSAGE_END_TAG;
 
@@ -81,19 +81,25 @@ class LoggerLayoutGelf extends LoggerLayout
     {
         $messageAsArray = array(
             'version' => self::GELF_PROTOCOL_VERSION,
-            'timestamp' => $event->getTimeStamp(),
             'short_message' => $this->getShortMessage($event),
             'full_message' => $this->getFullMessage($event),
-            'facility' => $event->getLoggerName(),
-            'host' => $this->getHostname(),
             'level' => $this->getGELFLevel($event->getLevel()),
             'file' => $event->getLocationInformation()->getFileName(),
-            'line' => $event->getLocationInformation()->getLineNumber()
+            'line' => $event->getLocationInformation()->getLineNumber(),
+            'host' => $this->getHostname(),
+            'facility' => 'php',
+            '_logger' => $event->getLoggerName(),
+            '_timestamp' => $event->getTimeStamp(),
         );
 
         foreach ($event->getMDCMap() as $key => $value)
         {
-            $messageAsArray['_MDC_'.$key] = $value;
+            if ($key == 'file' || $key == 'line' || $key == 'facility') {
+                $messageAsArray[$key] = $value;
+            } else {
+                $messageAsArray['_' . $key] = $value;
+            }
+
         }
 
         return json_encode($messageAsArray);
