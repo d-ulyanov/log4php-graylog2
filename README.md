@@ -21,23 +21,20 @@ For composer users
 
 1. Add to your composer.json:<br/>
 <pre>
-{
-    "require": {
-        "dulyanov/log4php-graylog2": ">=1.0.0"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/d-ulyanov/log4php-graylog2.git"
-        }
-    ]
-}
+    {
+        "require": {
+            "dulyanov/log4php-graylog2": ">=1.0.0"
+        },
+        "repositories": [
+            {
+                "type": "vcs",
+                "url": "https://github.com/d-ulyanov/log4php-graylog2.git"
+            }
+        ]
+    }
 </pre>
 
-2. Use your new logger:
-
-require 'log4php/Logger.php';<br />
-require 'log4php-graylog2/src/main/php/bootstrap.php';
+2. Run composer.phar update
 
 ***************
 For other users
@@ -53,11 +50,11 @@ require 'log4php-graylog2/src/main/php/bootstrap.php';
 Configuration
 =============
 
-.. container:: tabs
+***
+XML
+***
 
-    .. rubric:: XML format
-    .. code-block:: xml
-
+<pre>
         <configuration xmlns="http://logging.apache.org/log4php/">
             <appender name="MyAMQPAppender" class="LoggerAppenderAMQP">
                 <param name="host" value="example.com" />
@@ -81,10 +78,13 @@ Configuration
                 <appender_ref ref="MyGraylog2Appender" />
             </root>
         </configuration>
+</pre>
 
-    .. rubric:: PHP format
-    .. code-block:: php
+***
+PHP
+***
 
+<pre>
         array(
             'rootLogger' => array(
                 'appenders' => array('MyAMQPAppender', 'MyGraylog2Appender')
@@ -118,14 +118,15 @@ Configuration
                 ),
             ),
         );
+</pre>
 
 =====
 Usage
 =====
 
-<code>
+<pre>
 Logger::configure('exampleConfig.xml', 'LoggerConfigurationAdapterXML');
 
 $myLogger = Logger::getLogger('MyLogger');
 $myLogger->debug("Hello world!");
-</code>
+</pre>
