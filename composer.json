@@ -1,0 +1,26 @@
+{
+    "name": "dulyanov/log4php-graylog2",
+    "description": "Log4php appenders and layouts for compatibility with graylog2",
+    "authors": [
+        {
+            "name": "Dmitry Ulyanov",
+            "email": "dmitriy.ulyanov@wikimart.ru",
+            "role": "Developer"
+        }
+    ],
+    "keywords": ["log", "logging", "php", "graylog2"],
+    "homepage": "https://github.com/d-ulyanov/log4php-graylog2",
+    "license": "Apache-2.0",
+    "support": {
+        "issues": "https://github.com/d-ulyanov/log4php-graylog2/issues",
+        "source": "https://github.com/d-ulyanov/log4php-graylog2.git",
+        "email": "dmitriy.ulyanov@wikimart.ru"
+    },
+    "autoload": {
+        "classmap": ["src/main/php/"]
+    },
+    "require": {
+        "php": ">=5.2.7",
+        "apache/log4php": ">=2.3.0"
+    }
+}
