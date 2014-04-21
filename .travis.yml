@@ -7,5 +7,6 @@ php:
     - hhvm
 
 before_script:
+    - echo 'default_socket_timeout = 60' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
     - if [ "`phpenv version-name`" != "hhvm" ]; then echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
     - composer install --prefer-source

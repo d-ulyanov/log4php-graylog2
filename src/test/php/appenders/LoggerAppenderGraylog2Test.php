@@ -58,8 +58,6 @@ class LoggerAppenderGraylog2Test extends PHPUnit_Framework_TestCase {
         $appender = $this->createAppender();
 
         $unicodeString = "Ilık süt";
-        $chunks = $appender->splitUnicodeString($unicodeString, 3);
-
         $this->assertCount(3, $appender->splitUnicodeString($unicodeString, 3));
         $this->assertCount(8, $appender->splitUnicodeString($unicodeString, 1));
     }
@@ -173,16 +171,6 @@ class LoggerAppenderGraylog2Test extends PHPUnit_Framework_TestCase {
      * @return LoggerAppenderGraylog2
      */
     protected function createAppender() {
-        Logger::configure(array(
-                'appenders' => array(
-                    'default' => array(
-                        'class' => 'LoggerAppenderGraylog2',
-                    ),
-                ),
-                'rootLogger' => array(
-                    'appenders' => array('default'),
-                ),
-            ));
         return new LoggerAppenderGraylog2();
     }
 
