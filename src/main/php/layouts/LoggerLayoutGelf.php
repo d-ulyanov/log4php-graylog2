@@ -86,7 +86,9 @@ class LoggerLayoutGelf extends LoggerLayout {
     );
 
     public function activateOptions() {
-        $this->setHost(gethostname());
+        if (!$this->getHost()) {
+            $this->setHost(gethostname());
+        }
         return parent::activateOptions();
     }
 
