@@ -19,20 +19,21 @@ Installation
 For composer users
 ******************
 
-1. Add to your composer.json:<br/>
-<pre>
-    {
-        "require": {
-            "dulyanov/log4php-graylog2": ">=1.0.0"
-        },
-        "repositories": [
-            {
-                "type": "vcs",
-                "url": "https://github.com/d-ulyanov/log4php-graylog2.git"
-            }
-        ]
-    }
-</pre>
+1. Add to your composer.json: 
+
+ ```JSON
+ {
+     "require": {
+         "dulyanov/log4php-graylog2": ">=1.0.0"
+     },
+     "repositories": [
+         {
+             "type": "vcs",
+             "url": "https://github.com/d-ulyanov/log4php-graylog2.git"
+         }
+     ]
+ }
+ ```
 
 2. Run composer.phar update
 
@@ -43,8 +44,10 @@ For other users
 1. Set up your log4php config file (see exampleConfig.xml)
 2. Use your new logger:
 
-require 'log4php/Logger.php';<br />
-require 'log4php-graylog2/src/main/php/bootstrap.php';
+ ```PHP
+ require 'log4php/Logger.php';
+ require 'log4php-graylog2/src/main/php/bootstrap.php';
+ ```
 
 =============
 Configuration
@@ -54,79 +57,79 @@ Configuration
 XML
 ***
 
-<pre>
-        <configuration xmlns="http://logging.apache.org/log4php/">
-            <appender name="MyAMQPAppender" class="LoggerAppenderAMQP">
-                <param name="host" value="example.com" />
-                <param name="port" value="5672" />
-                <param name="vhost" value="/logs" />
-                <param name="login" value="my_login" />
-                <param name="password" value="my_secret_password" />
-                <param name="exchangeName" value="my_exchange" />
-                <param name="routingKey" value="php_application" />
-                <param name="contentType" value="application/json" />
-                <layout class="LoggerLayoutGelf" />
-            </appender>
-            <appender name="MyGraylog2Appender" class="LoggerAppenderGraylog2">
-                <param name="host" value="192.168.1.123" />
-                <param name="port" value="12201" />
-                <layout class="LoggerLayoutGelf" />
-            </appender>
-            <root>
-                <level value="DEBUG" />
-                <appender_ref ref="MyAMQPAppender" />
-                <appender_ref ref="MyGraylog2Appender" />
-            </root>
-        </configuration>
-</pre>
+```XML
+<configuration xmlns="http://logging.apache.org/log4php/">
+    <appender name="MyAMQPAppender" class="LoggerAppenderAMQP">
+        <param name="host" value="example.com" />
+        <param name="port" value="5672" />
+        <param name="vhost" value="/logs" />
+        <param name="login" value="my_login" />
+        <param name="password" value="my_secret_password" />
+        <param name="exchangeName" value="my_exchange" />
+        <param name="routingKey" value="php_application" />
+        <param name="contentType" value="application/json" />
+        <layout class="LoggerLayoutGelf" />
+    </appender>
+    <appender name="MyGraylog2Appender" class="LoggerAppenderGraylog2">
+        <param name="host" value="192.168.1.123" />
+        <param name="port" value="12201" />
+        <layout class="LoggerLayoutGelf" />
+    </appender>
+    <root>
+        <level value="DEBUG" />
+        <appender_ref ref="MyAMQPAppender" />
+        <appender_ref ref="MyGraylog2Appender" />
+    </root>
+</configuration>
+```
 
 ***
 PHP
 ***
 
-<pre>
-        array(
-            'rootLogger' => array(
-                'appenders' => array('MyAMQPAppender', 'MyGraylog2Appender')
+```PHP
+array(
+    'rootLogger' => array(
+        'appenders' => array('MyAMQPAppender', 'MyGraylog2Appender')
+    ),
+    'appenders' => array(
+        'MyAMQPAppender' => array(
+            'class' => 'LoggerAppenderAMQP',
+            'params' => array(
+                'host' => 'example.com',
+                'port' => 5672,
+                'vhost' => '/logs',
+                'login' => 'my_login',
+                'password' => 'my_secret_password',
+                'exchangeName' => 'my_exchange',
+                'routingKey' => 'php_application',
+                'contentType' => 'application/json'
             ),
-            'appenders' => array(
-                'MyAMQPAppender' => array(
-                    'class' => 'LoggerAppenderAMQP',
-                    'params' => array(
-                        'host' => 'example.com',
-                        'port' => 5672,
-                        'vhost' => '/logs',
-                        'login' => 'my_login',
-                        'password' => 'my_secret_password',
-                        'exchangeName' => 'my_exchange',
-                        'routingKey' => 'php_application',
-                        'contentType' => 'application/json'
-                    ),
-                    'layout' => array(
-                        'class' => 'LoggerLayoutGelf'
-                    )
-                ),
-                'MyGraylog2Appender' => array(
-                    'class' => 'LoggerAppenderGraylog2',
-                    'params' => array(
-                        'host' => '192.168.1.123',
-                        'port' => 12201
-                    ),
-                    'layout' => array(
-                        'class' => 'LoggerLayoutGelf'
-                    )
-                ),
+            'layout' => array(
+                'class' => 'LoggerLayoutGelf'
+            )
+        ),
+        'MyGraylog2Appender' => array(
+            'class' => 'LoggerAppenderGraylog2',
+            'params' => array(
+                'host' => '192.168.1.123',
+                'port' => 12201
             ),
-        );
-</pre>
+            'layout' => array(
+                'class' => 'LoggerLayoutGelf'
+            )
+        ),
+    ),
+);
+```
 
 =====
 Usage
 =====
 
-<pre>
+```PHP
 Logger::configure('exampleConfig.xml', 'LoggerConfigurationAdapterXML');
 
 $myLogger = Logger::getLogger('MyLogger');
 $myLogger->debug("Hello world!");
-</pre>
+```
