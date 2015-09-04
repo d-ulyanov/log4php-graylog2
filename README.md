@@ -1,7 +1,7 @@
 =====
 About
 =====
-Copyright (c) 2012-2014 Dmitriy Ulyanov
+Copyright (c) 2012-2015 Dmitriy Ulyanov
 
 Here you can find 2 new appenders for log4php: LoggerAppenderAMQP and LoggerAppenderGraylog2.
 You can pass log messages to Graylog2 or AMQP (RabbitMQ for ex.) using it.
@@ -24,7 +24,7 @@ For composer users
  ```JSON
  {
      "require": {
-         "dulyanov/log4php-graylog2": ">=1.0.0"
+         "dulyanov/log4php-graylog2": "~1.0"
      },
      "repositories": [
          {
