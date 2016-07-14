@@ -192,8 +192,13 @@ class LoggerLayoutGelf extends LoggerLayout {
      * @return string
      */
     public function getFullMessage(LoggerLoggingEvent $event) {
+        $throwableInformation = $event->getThrowableInformation();
+        $throwableInformationString = '';
+        if(!is_null($throwableInformation)) {
+            $throwableInformationString = implode("\n", $throwableInformation->getStringRepresentation());
+        }
         return $this->cleanNonUtfSymbols(
-            $event->getRenderedMessage()
+            $event->getRenderedMessage() . $throwableInformationString
         );
     }
 

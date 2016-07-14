@@ -151,6 +151,22 @@ class LoggerLayoutGelfTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testMessageWithThrowable() {
+
+        $message = str_repeat("with Throwable\n", 40);
+        $exception = new \Exception('Test');
+        $expectedMessage = str_repeat("with Throwable\n", 40).$exception;
+        $event = LoggerTestHelper::getEventWithThrowable($message, "test", $exception);
+
+        $layout = new LoggerLayoutGelf();
+        $layout->activateOptions();
+
+        $expectedShortMessageLength = $layout->getShortMessageLength();
+        $this->assertEquals($expectedShortMessageLength, mb_strlen($layout->getShortMessage($event)));
+        $this->assertEquals($expectedMessage, $layout->getFullMessage($event));
+
+    }
+
     public function testNonUnicodeCharsReplacement() {
         $invalidUtf8String = str_repeat(chr(193), 10);
         $event = LoggerTestHelper::getErrorEvent($invalidUtf8String);
