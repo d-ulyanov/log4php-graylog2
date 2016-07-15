@@ -156,7 +156,7 @@ class LoggerLayoutGelfTest extends PHPUnit_Framework_TestCase {
         $message = str_repeat("with Throwable\n", 40);
         $exception = new \Exception('Test');
         $expectedMessage = str_repeat("with Throwable\n", 40).$exception;
-        $event = LoggerTestHelper::getEventWithThrowable($message, "test", $exception);
+        $event = new LoggerLoggingEvent(__CLASS__, new Logger("test"), LoggerLevel::getLevelFatal(), $message, null, $throwable = $exception);
 
         $layout = new LoggerLayoutGelf();
         $layout->activateOptions();
