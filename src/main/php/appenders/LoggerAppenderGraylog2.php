@@ -48,7 +48,7 @@ class LoggerAppenderGraylog2 extends LoggerAppender
     const DEFAULT_PORT = 12201;
 
     /** Default value for {@link $chunkSize} */
-    const DEFAULT_CHUNK_SIZE = 8152;
+    const DEFAULT_CHUNK_SIZE = 8150; // this gives a 8192B ethernet frame
 
     /**
      * Server on which graylog2-server instance is located
@@ -126,15 +126,16 @@ class LoggerAppenderGraylog2 extends LoggerAppender
     public function splitMessageIntoChunks($message, $chunkSize) {
         $chunks = array();
 
-        if (mb_strlen($message) <= $chunkSize) {
+        if (strlen($message) <= $chunkSize) {
             // Return original message
             $chunks[] = $message;
         } else {
             $messageId = uniqid();
 
             // Split the message into chunks
-            $messageChunks = $this->splitUnicodeString($message, $chunkSize);
-            $messageChunksCount = count($messageChunks);
+            // NOTE: the -12B takes into account the extra data added by createMessageFromChunk
+            $messageChunks = $this->splitBinaryString($message, $chunkSize - 12);
+            $messageChunksCount = count($messageChunks); // WARNING: Graylog will not be happy if >128 chunks
 
             // Send chunks to graylog server
             foreach($messageChunks as $messageChunkIndex => $messageChunk) {
@@ -192,9 +193,9 @@ class LoggerAppenderGraylog2 extends LoggerAppender
      * @return string
      */
     protected function createMessageFromChunk($messageId, $messageChunk, $messageChunkIndex, $messageChunksCount) {
-        return pack('CC', 30, 15) .
-            substr(md5($messageId, true), 0, 8) .
-            pack('CC', $messageChunkIndex, $messageChunksCount) .
+        return pack('CC', 30, 15) . //2B
+            substr(md5($messageId, true), 0, 8) . //8B
+            pack('CC', $messageChunkIndex, $messageChunksCount) . //2B
             $messageChunk;
     }
 
@@ -214,16 +215,16 @@ class LoggerAppenderGraylog2 extends LoggerAppender
      * @param int $chunkLength
      * @return array
      */
-    public function splitUnicodeString($string, $chunkLength = 1) {
+    public function splitBinaryString($string, $chunkLength = 1) {
         if ($chunkLength < 1) {
             throw new Exception("The length of each segment must be greater than zero");
         }
 
         $out = array();
-        $length = mb_strlen($string, "UTF-8");
+        $length = strlen($string);
 
         for ($i = 0; $i < $length; $i += $chunkLength) {
-            $out[] = mb_substr($string, $i, $chunkLength, "UTF-8");
+            $out[] = substr($string, $i, $chunkLength);
         }
 
         return $out;
